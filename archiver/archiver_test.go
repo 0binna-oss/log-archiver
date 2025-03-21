@@ -21,7 +21,7 @@ func TestArchiveLogs(t *testing.T) {
 
 	// Archive the logs
 	archiveDir := "test-archive"
-	archivePath, err := ArchiveLogs(logFile.Name(), archiveDir)
+	archivePath, err := ArchiveLogs(logFile.Name(), archiveDir, false)
 	if err != nil {
 		t.Fatalf("Failed to archive logs: %v", err)
 	}

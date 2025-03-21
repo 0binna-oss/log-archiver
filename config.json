@@ -1,0 +1,6 @@
+{
+    "archiveDir": "archive",
+    "compress": true,
+    "maxLogSizeMB": 10,
+    "maxLogAgeDays": 30
+}

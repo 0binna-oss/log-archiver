@@ -3,13 +3,14 @@ package archiver
 import (
 	"bufio"
 	"fmt"
+	"log-archiver/compressor"
 	"os"
 	"path/filepath"
 	"time"
 )
 
 // ArchiveLogs archives the given log file to the specified directory with a time stamp
-func ArchiveLogs(logFilePath, archiveDir string) (string, error) {
+func ArchiveLogs(logFilePath, archiveDir string, compress bool) (string, error) {
 	// Open the log file
 	file, err := os.Open(logFilePath)
 	if err != nil {
@@ -50,6 +51,17 @@ func ArchiveLogs(logFilePath, archiveDir string) (string, error) {
 	// Check for any errors during scanning
 	if err := scanner.Err(); err != nil {
 		return "", fmt.Errorf("error reading log file: %w", err)
+	}
+
+	// Compress the archive file if enabled
+	if compress {
+		compressFilePath, err := compressor.CompressFile(archiveFilePath)
+		if err != nil {
+			return "", fmt.Errorf("error compressing archive file: %w", err)
+		}
+		// Remove the original umcompressed file
+		os.Remove(archiveFilePath)
+		return compressFilePath, nil
 	}
 
 	return archiveFilePath, nil

@@ -7,10 +7,17 @@ import (
 
 	"log-archiver/archiver"
 	"log-archiver/config"
+	"log-archiver/rotator"
 	"log-archiver/utils"
 )
 
 func main() {
+	// load configuration
+	config, err := config.LoadConfig("config.json")
+	if err != nil {
+		log.Fatalf("Error loading config: %v\n", err)
+	}
+
 	// Checks if the user provided a log file as an argument
 	if len(os.Args) < 2 {
 		fmt.Println("Usage: log-archiver <logfile>")
@@ -25,10 +32,17 @@ func main() {
 	}
 
 	// Archive the logs
-	archiveFilePath, err := archiver.ArchiveLogs(logFilePath, config.DefaultArchiveDir)
+	archiveFilePath, err := archiver.ArchiveLogs(logFilePath, config.ArchiveDir, config.Compress)
 	if err != nil {
 		log.Fatalf("Error archiving logs: %v\n", err)
 	}
 
 	fmt.Printf("Logs archived successfully to %s\n", archiveFilePath)
+
+	// Rotate logs
+	if err := rotator.RotateLogs(config.ArchiveDir, config.MaxLogSizeMB, config.MaxLogAgeDays); err != nil {
+		log.Fatalf("Error rotating logs: %v\n", err)
+	}
+
+	fmt.Println("Log rotation completed successfully")
 }
